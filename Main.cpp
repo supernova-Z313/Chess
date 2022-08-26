@@ -847,3 +847,135 @@ void Bishop_opr(string map[8][8], int beat[2], int house[2], char Turn, string d
 };
 
 
+// ===========================================================================================
+// King check which homes can go
+void King_go_checker(string map[8][8], int Position[2], int result[16][2], char tim_n){
+	int def_cordin[8][2] = {{1,0}, {1,-1}, {1,1}, {-1,-1}, {-1,0}, {-1,1}, {0,1}, {0,-1}};
+	int res_counter = 0;
+	for(int i=0; i<8; i++){
+		if((Position[0]+def_cordin[i][0]>=0 && Position[0]+def_cordin[i][0]<=7) && (Position[1]+def_cordin[i][1]>=0 && Position[1]+def_cordin[i][1]<=7)){
+			if(map[Position[0]+def_cordin[i][0]][Position[1]+def_cordin[i][1]][1] != tim_n){
+				result[res_counter][0] = Position[0]+def_cordin[i][0];  result[res_counter][1] = Position[1]+def_cordin[i][1];
+				res_counter++;
+			}
+		}
+	}
+};
+
+// -------------------------------------------------------
+// heck is King can go to that position or not
+int King_is_in(int res[8][2], int Pos[2]){
+	for(int i=0; i<8; i++){
+		if(res[i][0] == Pos[0] and res[i][1] == Pos[1]){
+			return 0;
+		}
+	}
+	return 1;
+};
+
+// -------------------------------------------------------
+// King check Operation and state
+void King_opr(string map[8][8], int beat[2], int house[2], char Turn, string del_beat_1[16], string del_beat_2[16]){
+	int all_home[8][2] = {{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
+
+	King_go_checker(map, beat, all_home, Turn);
+	while(King_is_in(all_home, house)){
+		cout<<"Cant move to selected house, Please enter another:  ";
+		string wrong; cin>>wrong;
+		string_to_Position(wrong, house);
+	}
+
+	if(map[house[0]][house[1]] != "  "){
+		if(map[house[0]][house[1]] != "  "){
+			for(int i=0; i<16; i++){
+				if(Turn == '1'){
+					if(del_beat_1[i] == ""){
+						del_beat_1[i] = map[house[0]][house[1]];
+						break;
+					}
+				}
+				else{
+					if(del_beat_2[i] == ""){
+						del_beat_2[i] = map[house[0]][house[1]];
+						break;	
+					}
+				}
+			}
+		}
+		map[house[0]][house[1]] = map[beat[0]][beat[1]];
+		map[beat[0]][beat[1]] = "  ";
+
+		int del_l[14][2] = {{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1}};
+		int K = del_row_column(map, house, del_l);
+		if(K){
+			del_row_column_beat(map, del_l, del_beat_1, del_beat_2);
+		}
+	}
+	else{
+		map[house[0]][house[1]] = map[beat[0]][beat[1]];
+		map[beat[0]][beat[1]] = "  ";
+	}
+};
+
+
+// ===========================================================================================
+//  heck is Queen can go to that position or not
+int Queen_is_in(int res[16][2], int Pos[2], int y){
+	for(int i=0; i<y; i++){
+		if(res[i][0] == Pos[0] and res[i][1] == Pos[1]){
+			return 1;
+		}
+	}
+	return 0;
+};
+// -------------------------------------------------------
+// Queen check Operation and state
+void Queen_opr(string map[8][8], int beat[2], int house[2], char Turn, string del_beat_1[16], string del_beat_2[16]){
+	int all_home_1[16][2] = {{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
+	int all_home_2[14][2] = {{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1},{-1,-1}};
+	Bishop_go_checker(map, beat, all_home_1, Turn);
+	Rook_go_checker(map, beat, all_home_2, 0, Turn);
+	while(1){
+		if(Queen_is_in(all_home_1, house, 16)){
+			break;
+		}
+		else if(Queen_is_in(all_home_2, house, 14)){
+			break;
+		}
+		cout<<"hhhh"<<endl;
+		cout<<"Cant move to selected house, Please enter another:  ";
+		string wrong; cin>>wrong;
+		string_to_Position(wrong, house);
+	}
+
+	if(map[house[0]][house[1]] != "  "){
+		if(map[house[0]][house[1]] != "  "){
+			for(int i=0; i<16; i++){
+				if(Turn == '1'){
+					if(del_beat_1[i] == ""){
+						del_beat_1[i] = map[house[0]][house[1]];
+						break;
+					}
+				}
+				else{
+					if(del_beat_2[i] == ""){
+						del_beat_2[i] = map[house[0]][house[1]];
+						break;	
+					}
+				}
+			}
+		}
+		map[house[0]][house[1]] = map[beat[0]][beat[1]];
+		map[beat[0]][beat[1]] = "  ";
+
+		int del_l[14][2] = {{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1},{-1, -1}};
+		int K = del_row_column(map, house, del_l);
+		if(K){
+			del_row_column_beat(map, del_l, del_beat_1, del_beat_2);
+		}
+	}
+	else{
+		map[house[0]][house[1]] = map[beat[0]][beat[1]];
+		map[beat[0]][beat[1]] = "  ";
+	}
+};
