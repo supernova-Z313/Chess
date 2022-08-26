@@ -979,3 +979,4 @@ void Queen_opr(string map[8][8], int beat[2], int house[2], char Turn, string de
 		map[beat[0]][beat[1]] = "  ";
 	}
 };
+
